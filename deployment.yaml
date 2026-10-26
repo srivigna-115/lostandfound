@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campus-lost-found
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: campus-lost-found
+  template:
+    metadata:
+      labels:
+        app: campus-lost-found
+    spec:
+      containers:
+        - name: campus-lost-found
+          image: srivigna115/campus-lost-found:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20

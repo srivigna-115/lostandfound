@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Lost &amp; Found Portal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#1d2939}
+header{background:#17324d;color:white;padding:28px 18px}header .wrap,main{max-width:1050px;margin:auto}
+h1{margin:0 0 8px;font-size:clamp(25px,4vw,36px)}header p{margin:0;opacity:.9}
+main{padding:24px 16px 45px;display:grid;grid-template-columns:minmax(260px,.85fr) minmax(300px,1.4fr);gap:20px}
+.panel{background:white;border-radius:14px;padding:22px;box-shadow:0 3px 14px #17324d12}h2{margin:0 0 16px;font-size:21px}
+label{display:block;font-size:14px;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ccd5df;border-radius:8px;font:inherit}
+textarea{min-height:85px;resize:vertical}button,.filter{display:inline-block;border:0;background:#2764a5;color:white;padding:11px 15px;border-radius:8px;font-weight:bold;cursor:pointer;text-decoration:none}
+button{width:100%;margin-top:16px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.filter{background:#e8eef6;color:#17324d;padding:8px 12px;font-size:13px}.filter.active{background:#2764a5;color:white}
+.item{border:1px solid #e3e9f0;border-radius:10px;padding:15px;margin-top:11px}.item h3{margin:0 0 8px}
+.pill{font-size:12px;font-weight:bold;padding:4px 8px;border-radius:20px;background:#e7f5ed;color:#17643a}
+.pill.lost{background:#fff0df;color:#8c4b00}.meta{color:#617084;font-size:13px;margin:7px 0}
+.notice{background:#e7f5ed;padding:10px;border-radius:8px;margin-bottom:12px}.empty{color:#617084;padding:20px 0}
+@media(max-width:720px){main{grid-template-columns:1fr}}
+</style></head>
+<body><header><div class="wrap"><h1>Campus Lost &amp; Found Portal</h1><p>Helping our campus community reunite with lost belongings.</p></div></header>
+<main><section class="panel"><h2>Report an Item</h2>
+{% with messages = get_flashed_messages() %}{% if messages %}{% for message in messages %}<div class="notice">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+<form method="post" action="{{ url_for('report') }}">
+<label for="item_name">Item name</label><input id="item_name" name="item_name" placeholder="e.g. Blue water bottle" required>
+<label for="status">Report type</label><select id="status" name="status"><option value="Lost">I lost an item</option><option value="Found">I found an item</option></select>
+<label for="location">Location on campus</label><input id="location" name="location" placeholder="e.g. Library, Block A" required>
+<label for="description">Description</label><textarea id="description" name="description" placeholder="Color, brand, identifying details..." required></textarea>
+<label for="contact">Contact information</label><input id="contact" name="contact" placeholder="Email or phone" required>
+<button type="submit">Submit Report</button></form></section>
+<section class="panel"><h2>Recent Reports</h2><nav class="filters">
+<a class="filter {% if selected_status == 'All' %}active{% endif %}" href="{{ url_for('home', status='All') }}">All items</a>
+<a class="filter {% if selected_status == 'Lost' %}active{% endif %}" href="{{ url_for('home', status='Lost') }}">Lost</a>
+<a class="filter {% if selected_status == 'Found' %}active{% endif %}" href="{{ url_for('home', status='Found') }}">Found</a></nav>
+{% for item in items %}<article class="item"><h3>{{ item['item_name'] }} <span class="pill {% if item['status'] == 'Lost' %}lost{% endif %}">{{ item['status'] }}</span></h3>
+<div class="meta">Campus location: {{ item['location'] }} · {{ item['created_at'] }}</div><p>{{ item['description'] }}</p><div class="meta">Contact: {{ item['contact'] }}</div></article>
+{% else %}<p class="empty">No reports yet. Add the first report using the form.</p>{% endfor %}</section></main></body></html>
